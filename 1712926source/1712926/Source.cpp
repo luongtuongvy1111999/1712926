@@ -5,64 +5,71 @@
 
 struct SinhVien
 {
-	char* MSSV;
-	char* Ten;
-	char* Khoa;
+	wchar_t* MSSV;
+	wchar_t* Ten;
+	wchar_t* Khoa;
 	int KhoaHoc;
-	char* NgaySinh;
-	char* HinhAnh;
-	char* MoTaBanThan;
-	char **SoThich = NULL;
+	wchar_t* NgaySinh;
+	wchar_t* Email;
+	wchar_t* HinhAnh;
+	wchar_t* MoTaBanThan;
+	wchar_t **SoThich = NULL;
+	int SoSoThich = 0;
 };
 
-char* ReplaceStr(char* str)
+wchar_t* ReplaceStr(wchar_t* str)
 {
-	for (int i = 0; i < strlen(str); i++)
+	for (int i = 0; i < wcslen(str); i++)
 	{
-		if (str[i] == '?')
+		if (str[i] == L'?')
 		{
-			str[i] = ',';
+			str[i] = L',';
 		}
 	}
 	return str;
 }
+
 int main()
 {
 	FILE *fin;
 	FILE *fout;
 	errno_t eIn;
-	char buf[255];
-	char *Str, *next;
-	SinhVien sv;
-
-	eIn = fopen_s(&fin, "database.csv", "r");
+	wchar_t buf[255];
+	wchar_t *Str, *next;
+	SinhVien *ArrSV = new SinhVien[10];
+	eIn = fopen_s(&fin, "database.csv", "r,ccs=UTF-8");
 
 	if (eIn != 0) {
 		return 0;
 	}
 
-	while (fgets(buf, 255, fin) != NULL)
-	{
+	int i = 0;
 
-		//fprintf(fout, "%s", buf)
-		sv.MSSV = strtok(buf, ",");
-		sv.Ten = strtok(NULL, ",");
-		sv.Khoa = strtok(NULL, ",");
-		sv.KhoaHoc = atoi(strtok(NULL, ","));
-		sv.NgaySinh = strtok(NULL, ",");
-		sv.HinhAnh = strtok(NULL, ",");
-		sv.MoTaBanThan = strtok(NULL, ",");
-		sv.SoThich = new char*[100];
-		Str = strtok(NULL, ",");
-		int i = 0;
+	while (fgetws(buf, 1000, fin) != NULL)
+	{
+		SinhVien sv;
+		sv.MSSV = wcstok(buf, L",");
+		sv.Ten = wcstok(NULL, L",");
+		sv.Khoa = wcstok(NULL, L",");
+		sv.KhoaHoc = _wtoi(wcstok(NULL, L","));
+		sv.NgaySinh = wcstok(NULL, L",");
+		sv.Email = wcstok(NULL, L",");
+		sv.HinhAnh = wcstok(NULL, L",");
+		sv.MoTaBanThan = ReplaceStr(wcstok(NULL, L","));
+		sv.SoThich = new wchar_t*[100];
+		Str = wcstok(NULL, L",");
+
 		while (Str != NULL)
 		{
 			Str = ReplaceStr(Str);
-			sv.SoThich[i] = Str;
-			Str = strtok(NULL, ",");
-			i++;
+			sv.SoThich[sv.SoSoThich] = Str;
+			sv.SoSoThich++;
+			Str = wcstok(NULL, L",");
 		}
+		ArrSV[i] = sv;
+		i++;
 	}
+
 	fclose(fin);
 	return 0;
 }
