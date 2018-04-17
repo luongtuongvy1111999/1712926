@@ -37,7 +37,7 @@ int main()
 	wchar_t buf[255];
 	wchar_t *Str, *next;
 	SinhVien *ArrSV = new SinhVien[10];
-	eIn = fopen_s(&fin, "database.csv", "r,ccs=UTF-8");
+	eIn = fopen_s(&fin, "infostu.csv", "r,ccs=UTF-8");
 
 	if (eIn != 0) {
 		return 0;
