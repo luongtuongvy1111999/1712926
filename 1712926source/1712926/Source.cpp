@@ -17,27 +17,39 @@ struct SinhVien
 	int SoSoThich = 0;
 };
 
-wchar_t* ReplaceStr(wchar_t* str)
-{
-	for (int i = 0; i < wcslen(str); i++)
-	{
-		if (str[i] == L'?')
-		{
-			str[i] = L',';
-		}
+SinhVien ReadingCSV(SinhVien sv, wchar_t buf[]){
+	wchar_t *Str = NULL;
+	sv.MSSV = wcstok(buf, L"\",");
+	sv.Ten = wcstok(NULL, L"\",");
+	sv.Khoa = wcstok(NULL, L"\",");
+	sv.KhoaHoc = _wtoi(wcstok(NULL, L"\","));
+	sv.NgaySinh = wcstok(NULL, L"\",");
+	sv.Email = wcstok(NULL, L"\",");
+	sv.HinhAnh = wcstok(NULL, L"\",");
+	Str = wcstok(NULL, L"\"");
+	sv.MoTaBanThan = wcstok(NULL, L"\"");
+	sv.SoThich = new wchar_t*[100];
+	Str = wcstok(NULL, L"\"");
+	Str = wcstok(NULL, L"\"");
+	while (Str != NULL){
+		sv.SoThich[sv.SoSoThich] = Str;
+		sv.SoSoThich++;
+		Str = wcstok(NULL, L"\"");
+		Str = wcstok(NULL, L"\"");
 	}
-	return str;
+	return sv;
 }
+
 
 int main()
 {
 	FILE *fin;
-	FILE *fout;
 	errno_t eIn;
-	wchar_t buf[255];
-	wchar_t *Str, *next;
+	wchar_t buf[1000];
+	
 	SinhVien *ArrSV = new SinhVien[10];
-	eIn = fopen_s(&fin, "infostu.csv", "r,ccs=UTF-8");
+
+	eIn = fopen_s(&fin, "database.csv", "r,ccs=UTF-8");
 
 	if (eIn != 0) {
 		return 0;
@@ -48,28 +60,10 @@ int main()
 	while (fgetws(buf, 1000, fin) != NULL)
 	{
 		SinhVien sv;
-		sv.MSSV = wcstok(buf, L",");
-		sv.Ten = wcstok(NULL, L",");
-		sv.Khoa = wcstok(NULL, L",");
-		sv.KhoaHoc = _wtoi(wcstok(NULL, L","));
-		sv.NgaySinh = wcstok(NULL, L",");
-		sv.Email = wcstok(NULL, L",");
-		sv.HinhAnh = wcstok(NULL, L",");
-		sv.MoTaBanThan = ReplaceStr(wcstok(NULL, L","));
-		sv.SoThich = new wchar_t*[100];
-		Str = wcstok(NULL, L",");
-
-		while (Str != NULL)
-		{
-			Str = ReplaceStr(Str);
-			sv.SoThich[sv.SoSoThich] = Str;
-			sv.SoSoThich++;
-			Str = wcstok(NULL, L",");
-		}
+		sv = ReadingCSV(sv, buf);
 		ArrSV[i] = sv;
 		i++;
 	}
-
 	fclose(fin);
 	return 0;
 }
