@@ -1,4 +1,4 @@
-#include <stdio.h>
+﻿#include <stdio.h>
 #include <stdlib.h>
 #include <locale.h>
 #include <string.h>
@@ -40,6 +40,103 @@ SinhVien ReadingCSV(SinhVien sv, wchar_t buf[]){
 	return sv;
 }
 
+void WritingHTML(SinhVien sv) {
+	setlocale(LC_ALL, "en_US.UTF-8");
+	FILE *fout;
+
+	errno_t eOut;
+	wchar_t *str = new wchar_t[50];
+	wchar_t s[20] = L".\\Website\\";
+	wcscpy(str, s);
+	wcscat(str, sv.MSSV);
+	wcscat(str, L".html");
+	//eOut = fopen_s(&fout, str, "w,ccs=UTF-8");
+	fout = _wfopen(str, L"w,ccs=UTF-8");
+
+
+	fwprintf(fout, L"%s", L"<!DOCTYPE html>");
+	fwprintf(fout, L"%s", L"<html xmlns='http://www.w3.org/1999/xhtml'>");
+	fwprintf(fout, L"%s", L"<head>");
+	fwprintf(fout, L"%s", L"<meta http-equiv='Content-Type' content='text/html;charset=utf-8'/>");
+	fwprintf(fout, L"%s", L"<link rel='stylesheet' type='text/css' href='personal.css'/>");
+	fwprintf(fout, L"%s %s %s", L"<title>HCMUS -", sv.Ten, L"</title>");
+	fwprintf(fout, L"%s", L"</head>");
+	fwprintf(fout, L"%s", L"<body>");
+	fwprintf(fout, L"%s", L"<div class='Layout_container'>");
+	fwprintf(fout, L"%s", L"<div class='Layout_Banner'>");
+	fwprintf(fout, L"%s", L"<div><img id='logo' src='Images/logo.jpg' height='105'/></div>");
+	fwprintf(fout, L"%s", L"<div class='Header_Title'>TRƯỜNG ĐẠI HỌC KHOA HỌC TỰ NHIÊN</div>");
+	fwprintf(fout, L"%s", L"</div>");
+	fwprintf(fout, L"%s", L"<div class='Layout_MainContents'>");
+	fwprintf(fout, L"%s", L"<div class='Personal_Main_Information'>");
+	fwprintf(fout, L"%s", L"<div class='Personal_Location'>");
+	fwprintf(fout, L"%s", L"<img src='Images/LogoFooter.jpg' width='27' height='33'/>");
+
+	//Name
+	fwprintf(fout, L"%s", L"<div class='Personal_FullName'>");
+	fwprintf(fout, L"%s %s %s %s", sv.Ten, L"-", sv.MSSV, L"</div>");
+	fwprintf(fout, L"%s %s %s", L"<div class='Personal_Department'>KHOA ", sv.Khoa, L"</div>");
+	fwprintf(fout, L"%s", L"<br />");
+	fwprintf(fout, L"%s", L"<div class='Personal_Phone'>");
+	fwprintf(fout, L"%s %s", L"Email:", sv.Email);
+	fwprintf(fout, L"%s", L"</div>");
+	fwprintf(fout, L"%s", L"<br/>");
+	fwprintf(fout, L"%s", L"<br/>");
+	fwprintf(fout, L"%s", L"</div>");
+	fwprintf(fout, L"%s", L"<div class='Personal_HinhcanhanKhung'>");
+	fwprintf(fout, L"%s%s%s", L"<img src='Images/", sv.HinhAnh, L"' class='Personal_Hinhcanhan'/>");
+	fwprintf(fout, L"%s", L"</div>");
+	fwprintf(fout, L"%s", L"</div>");
+	fwprintf(fout, L"%s", L"<div class='MainContain'>");
+	fwprintf(fout, L"%s", L"<div class='MainContain_Top'>");
+	fwprintf(fout, L"%s", L"<div class='InfoGroup'>Thông tin cá nhân</div>");
+	fwprintf(fout, L"%s", L"<div>");
+	fwprintf(fout, L"%s", L"<ul class='TextInList'>");
+	fwprintf(fout, L"%s %s %s", L"<li>Họ và tên:", sv.Ten, L"</li>");
+	fwprintf(fout, L"%s %s %s", L"<li>MSSV:", sv.MSSV, L"</li>");
+	fwprintf(fout, L"%s %s %s", L"<li>Sinh viên khoa", sv.Khoa, L"</li>");
+	fwprintf(fout, L"%s %s %s", L"<li>Ngày sinh :", sv.NgaySinh, L"</li>");
+	fwprintf(fout, L"%s %s %s", L"<li>Email :", sv.Email, L"</li>"); // email???
+	fwprintf(fout, L"%s", L"</ul>");
+	fwprintf(fout, L"%s", L"</div>");
+	fwprintf(fout, L"%s", L"<div class = 'InfoGroup'>Sở thích</div>");
+	fwprintf(fout, L"%s", L"<div>");
+	fwprintf(fout, L"%s", L"<ul class='TextInList'>");
+
+	//Sở thích
+	for (int i = 0; i < sv.SoSoThich; i++)
+	{
+		fwprintf(fout, L"%s %s %s", L"<li>", sv.SoThich[i], L"</li>");
+	}
+
+	//fwprintf(fout, L"%s", L"<li>Ẩm thực : bún riêu, bún thịt nướng</li>");
+	fwprintf(fout, L"%s", L"</ul>");
+	fwprintf(fout, L"%s", L"</div>");
+	fwprintf(fout, L"%s", L"<div class = 'InfoGroup'>Mô tả</div>");
+	fwprintf(fout, L"%s", L"<div class = 'Description'>");
+	fwprintf(fout, L"%s", sv.MoTaBanThan);
+	fwprintf(fout, L"%s", L"</div>");
+	fwprintf(fout, L"%s", L"</div>");
+	fwprintf(fout, L"%s", L"</div>");
+	fwprintf(fout, L"%s", L"</div>");
+	fwprintf(fout, L"%s", L"<div class='Layout_Footer'>");
+	fwprintf(fout, L"%s", L"<div class = 'divCopyright'>");
+	fwprintf(fout, L"%s", L"<br/>");
+	fwprintf(fout, L"%s", L"<img src='Images/LogoFooter_gray.jpg' width='34' height='41'/><br/>");
+	fwprintf(fout, L"%s", L"<br/>");
+	fwprintf(fout, L"%s", L"@2018</br>");
+	fwprintf(fout, L"%s", L"Đồ án giữa kỳ</br>");
+	fwprintf(fout, L"%s", L"Kỹ thuật lập trình</br>");
+	fwprintf(fout, L"%s", L"17CTT7</br>");
+	fwprintf(fout, L"%s", L"1712926 - Lương Tường Vy</br>");
+	fwprintf(fout, L"%s", L"</div>");
+	fwprintf(fout, L"%s", L"</div>");
+	fwprintf(fout, L"%s", L"</div>");
+	fwprintf(fout, L"%s", L"</body>");
+	fwprintf(fout, L"%s", L"</html>");
+	fclose(fout);
+}
+
 
 int main()
 {
@@ -49,7 +146,7 @@ int main()
 	
 	SinhVien *ArrSV = new SinhVien[10];
 
-	eIn = fopen_s(&fin, "database.csv", "r,ccs=UTF-8");
+	eIn = fopen_s(&fin, "infostu.csv", "r,ccs=UTF-8");
 
 	if (eIn != 0) {
 		return 0;
@@ -62,6 +159,7 @@ int main()
 		SinhVien sv;
 		sv = ReadingCSV(sv, buf);
 		ArrSV[i] = sv;
+		WritingHTML(ArrSV[i]);
 		i++;
 	}
 	fclose(fin);
