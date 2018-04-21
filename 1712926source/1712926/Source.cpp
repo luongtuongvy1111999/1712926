@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <locale.h>
 #include <string.h>
+#include <malloc.h>
+//#define MyFile "infostu.txt"
 
 struct SinhVien
 {
@@ -17,15 +19,31 @@ struct SinhVien
 	int SoSoThich = 0;
 };
 
-int CountSoThich(wchar_t *A){
+int CountSinhVien(){
 	int count = 0;
-	while (A != NULL){
+	wchar_t ch[1000];
+	FILE *fin;
+	errno_t eIn;
+	eIn = fopen_s(&fin, "infostu.csv", "r,ccs=UTF-8");
+
+	if (eIn != 0) {
+		return 0;
+	}
+	while (fgetws(ch, 1000, fin) != NULL){
 		count++;
-		A = wcstok(NULL, L"\"");
-		A = wcstok(NULL, L"\"");
 	}
 	return count;
 }
+
+/*int CountSoThich(wchar_t *A){
+	int count = 0;
+	while (int ){
+		count++;
+		
+		fgetwc(A);
+	}
+	return count;
+}*/
 
 SinhVien ReadingCSV(SinhVien sv, wchar_t buf[]){
 	wchar_t *Str = NULL;
@@ -153,33 +171,48 @@ void WritingHTML(SinhVien sv) {
 }
 
 
-int main()
+void main()
 {
 	FILE *fin;
 	errno_t eIn;
+	SinhVien *ArrSV = NULL;
+	int SoSV;
+	//wchar_t *buf= NULL;
+
+	/*eIn = fopen_s(&fin, "infostu.csv", "r,ccs=UTF-8");
 	
-	
-	SinhVien *ArrSV = new SinhVien[10];
+	if (eIn != 0) {
+		return 0;
+	}*/
+
+	SoSV = CountSinhVien();
+	ArrSV=(SinhVien*)malloc(SoSV*sizeof(SinhVien));
+	//fclose(fin);
 
 	eIn = fopen_s(&fin, "infostu.csv", "r,ccs=UTF-8");
 
-	if (eIn != 0) {
-		return 0;
-	}
+	/*if (eIn != 0) {
+		//return 0;
+		break;
+	}*/
 
 	int i = 0;
-	while (fin != NULL){
-		wchar_t buf[1000];
-		while (fgetws(buf, 1000, fin) != NULL)
-		{
-			SinhVien sv;
-			sv = ReadingCSV(sv, buf);
-			ArrSV[i] = sv;
-			//WritingHTML(ArrSV[i]);
-			i++;
-		}
+	//for (int i = 0; i < SoSV; i++){
+		//while (fin != NULL){
+			wchar_t buf[1000];
+			while (fgetws(buf, 1000, fin) != NULL)
+			{
+				SinhVien sv;
+				sv = ReadingCSV(sv, buf);
+				ArrSV[i] = sv;
+				//ArrSV[i] = ReadingCSV(sv, buf);
+				WritingHTML(ArrSV[i]);
+				i++;
+			//}
+		//}
 	}
-	for (int j = 0; j < i; j++){
+	
+	/*for (int j = 0; j < i; j++){
 		wprintf(L"%s", ArrSV[i].MSSV);
 	}
 		printf("Nhap stt: ");
@@ -187,7 +220,8 @@ int main()
 		do{
 			scanf_s("%d", &n);
 			WritingHTML(ArrSV[n]);
-		} while (n != -1);
+		} while (n != -1);*/
 	fclose(fin);
-	return 0;
+	//delete[] ArrSV;
+	//return 0;
 }
