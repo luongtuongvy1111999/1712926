@@ -17,6 +17,16 @@ struct SinhVien
 	int SoSoThich = 0;
 };
 
+int CountSoThich(wchar_t *A){
+	int count = 0;
+	while (A != NULL){
+		count++;
+		A = wcstok(NULL, L"\"");
+		A = wcstok(NULL, L"\"");
+	}
+	return count;
+}
+
 SinhVien ReadingCSV(SinhVien sv, wchar_t buf[]){
 	wchar_t *Str = NULL;
 	sv.MSSV = wcstok(buf, L"\",");
@@ -31,12 +41,17 @@ SinhVien ReadingCSV(SinhVien sv, wchar_t buf[]){
 	sv.SoThich = new wchar_t*[100];
 	Str = wcstok(NULL, L"\"");
 	Str = wcstok(NULL, L"\"");
-	while (Str != NULL){
-		sv.SoThich[sv.SoSoThich] = Str;
-		sv.SoSoThich++;
-		Str = wcstok(NULL, L"\"");
-		Str = wcstok(NULL, L"\"");
-	}
+	//wchar_t *A = Str;
+	//sv.SoSoThich = CountSoThich(Str);
+	sv.SoThich = new wchar_t*[sv.SoSoThich];
+	//for (int i = 0; i < sv.SoSoThich; i++){
+		while (Str != NULL){
+			sv.SoThich[sv.SoSoThich] = Str;
+			sv.SoSoThich++;
+			Str = wcstok(NULL, L"\"");
+			Str = wcstok(NULL, L"\"");
+		}
+	//}
 	return sv;
 }
 
@@ -44,7 +59,7 @@ void WritingHTML(SinhVien sv) {
 	setlocale(LC_ALL, "en_US.UTF-8");
 	FILE *fout;
 
-	errno_t eOut;
+	//errno_t eOut;
 	wchar_t *str = new wchar_t[50];
 	wchar_t s[20] = L".\\Website\\";
 	wcscpy(str, s);
@@ -142,7 +157,7 @@ int main()
 {
 	FILE *fin;
 	errno_t eIn;
-	wchar_t buf[1000];
+	
 	
 	SinhVien *ArrSV = new SinhVien[10];
 
@@ -153,15 +168,26 @@ int main()
 	}
 
 	int i = 0;
-
-	while (fgetws(buf, 1000, fin) != NULL)
-	{
-		SinhVien sv;
-		sv = ReadingCSV(sv, buf);
-		ArrSV[i] = sv;
-		WritingHTML(ArrSV[i]);
-		i++;
+	while (fin != NULL){
+		wchar_t buf[1000];
+		while (fgetws(buf, 1000, fin) != NULL)
+		{
+			SinhVien sv;
+			sv = ReadingCSV(sv, buf);
+			ArrSV[i] = sv;
+			//WritingHTML(ArrSV[i]);
+			i++;
+		}
 	}
+	for (int j = 0; j < i; j++){
+		wprintf(L"%s", ArrSV[i].MSSV);
+	}
+		printf("Nhap stt: ");
+		int n;
+		do{
+			scanf_s("%d", &n);
+			WritingHTML(ArrSV[n]);
+		} while (n != -1);
 	fclose(fin);
 	return 0;
 }
