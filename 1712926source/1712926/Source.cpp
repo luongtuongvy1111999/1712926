@@ -2,8 +2,6 @@
 #include <stdlib.h>
 #include <locale.h>
 #include <string.h>
-#include <malloc.h>
-//#define MyFile "infostu.txt"
 
 struct SinhVien
 {
@@ -25,8 +23,8 @@ int CountSinhVien(){
 	FILE *fin;
 	errno_t eIn;
 	eIn = fopen_s(&fin, "infostu.csv", "r,ccs=UTF-8");
-
-	if (eIn != 0) {
+	if (eIn != 0)
+	{
 		return 0;
 	}
 	while (fgetws(ch, 1000, fin) != NULL){
@@ -171,7 +169,7 @@ void WritingHTML(SinhVien sv) {
 }
 
 
-void main()
+int main()
 {
 	FILE *fin;
 	errno_t eIn;
@@ -179,40 +177,27 @@ void main()
 	int SoSV;
 	//wchar_t *buf= NULL;
 
-	/*eIn = fopen_s(&fin, "infostu.csv", "r,ccs=UTF-8");
-	
-	if (eIn != 0) {
-		return 0;
-	}*/
-
 	SoSV = CountSinhVien();
 	ArrSV=(SinhVien*)malloc(SoSV*sizeof(SinhVien));
-	//fclose(fin);
 
 	eIn = fopen_s(&fin, "infostu.csv", "r,ccs=UTF-8");
-
-	/*if (eIn != 0) {
-		//return 0;
-		break;
-	}*/
-
-	int i = 0;
-	//for (int i = 0; i < SoSV; i++){
-		//while (fin != NULL){
-			wchar_t buf[1000];
-			while (fgetws(buf, 1000, fin) != NULL)
-			{
-				SinhVien sv;
-				sv = ReadingCSV(sv, buf);
-				ArrSV[i] = sv;
-				//ArrSV[i] = ReadingCSV(sv, buf);
-				WritingHTML(ArrSV[i]);
-				i++;
-			//}
-		//}
+	if (eIn != 0)
+	{
+		return 0;
 	}
-	
-	/*for (int j = 0; j < i; j++){
+	int i = 0;
+	wchar_t *buf=(wchar_t*)malloc(1000*sizeof(wchar_t));
+	while (fgetws(buf, 1000, fin) != NULL)
+	{
+		SinhVien sv;
+		sv = ReadingCSV(sv, buf);
+		ArrSV[i] = sv;
+		WritingHTML(ArrSV[i]);
+		i++;
+		buf = (wchar_t*)malloc(1000 * sizeof(wchar_t));
+	}
+	/*
+	for (int j = 0; j < i; j++){
 		wprintf(L"%s", ArrSV[i].MSSV);
 	}
 		printf("Nhap stt: ");
@@ -220,8 +205,10 @@ void main()
 		do{
 			scanf_s("%d", &n);
 			WritingHTML(ArrSV[n]);
-		} while (n != -1);*/
+		} while (n != -1);
+		*/
 	fclose(fin);
-	//delete[] ArrSV;
-	//return 0;
+	delete[] ArrSV;
+	delete[] buf;
+	return 0;
 }
