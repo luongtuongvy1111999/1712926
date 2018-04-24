@@ -14,36 +14,34 @@ struct SinhVien
 	wchar_t* HinhAnh;
 	wchar_t* MoTaBanThan;
 	wchar_t **SoThich = NULL;
-	int SoSoThich = 0;
+	int SoSoThich = 1;
 };
 
-int CountSinhVien(){
+struct OptionProfile
+{
+	bool NgaySinh = true;;
+	bool Email = true;
+	bool MoTaBanThan = true;
+	bool SoThich = true;
+};
+
+int CountSinhVien() {
 	int count = 0;
 	wchar_t ch[1000];
 	FILE *fin;
 	errno_t eIn;
-	eIn = fopen_s(&fin, "infostu.csv", "r,ccs=UTF-8");
+	eIn = fopen_s(&fin, "database.csv", "r,ccs=UTF-8");
 	if (eIn != 0)
 	{
 		return 0;
 	}
-	while (fgetws(ch, 1000, fin) != NULL){
+	while (fgetws(ch, 1000, fin) != NULL) {
 		count++;
 	}
 	return count;
 }
 
-/*int CountSoThich(wchar_t *A){
-	int count = 0;
-	while (int ){
-		count++;
-		
-		fgetwc(A);
-	}
-	return count;
-}*/
-
-SinhVien ReadingCSV(SinhVien sv, wchar_t buf[]){
+SinhVien ReadingCSV(SinhVien sv, wchar_t buf[]) {
 	wchar_t *Str = NULL;
 	sv.MSSV = wcstok(buf, L"\",");
 	sv.Ten = wcstok(NULL, L"\",");
@@ -54,24 +52,25 @@ SinhVien ReadingCSV(SinhVien sv, wchar_t buf[]){
 	sv.HinhAnh = wcstok(NULL, L"\",");
 	Str = wcstok(NULL, L"\"");
 	sv.MoTaBanThan = wcstok(NULL, L"\"");
-	sv.SoThich = new wchar_t*[100];
+	//sv.SoThich = new wchar_t*[100];
 	Str = wcstok(NULL, L"\"");
 	Str = wcstok(NULL, L"\"");
 	//wchar_t *A = Str;
 	//sv.SoSoThich = CountSoThich(Str);
-	sv.SoThich = new wchar_t*[sv.SoSoThich];
+	sv.SoThich = (wchar_t **)malloc(sv.SoSoThich*sizeof(wchar_t**));
 	//for (int i = 0; i < sv.SoSoThich; i++){
-		while (Str != NULL){
-			sv.SoThich[sv.SoSoThich] = Str;
-			sv.SoSoThich++;
-			Str = wcstok(NULL, L"\"");
-			Str = wcstok(NULL, L"\"");
-		}
+	while (Str != NULL) {
+		sv.SoThich = (wchar_t **)realloc(sv.SoThich, sv.SoSoThich*sizeof(wchar_t**));
+		sv.SoThich[sv.SoSoThich] = Str;
+		sv.SoSoThich++;
+		Str = wcstok(NULL, L"\"");
+		Str = wcstok(NULL, L"\"");
+	}
 	//}
 	return sv;
 }
 
-void WritingHTML(SinhVien sv) {
+void WritingHTML(SinhVien sv, OptionProfile option) {
 	setlocale(LC_ALL, "en_US.UTF-8");
 	FILE *fout;
 
@@ -126,27 +125,45 @@ void WritingHTML(SinhVien sv) {
 	fwprintf(fout, L"%s %s %s", L"<li>Họ và tên:", sv.Ten, L"</li>");
 	fwprintf(fout, L"%s %s %s", L"<li>MSSV:", sv.MSSV, L"</li>");
 	fwprintf(fout, L"%s %s %s", L"<li>Sinh viên khoa", sv.Khoa, L"</li>");
-	fwprintf(fout, L"%s %s %s", L"<li>Ngày sinh :", sv.NgaySinh, L"</li>");
-	fwprintf(fout, L"%s %s %s", L"<li>Email :", sv.Email, L"</li>"); // email???
-	fwprintf(fout, L"%s", L"</ul>");
-	fwprintf(fout, L"%s", L"</div>");
-	fwprintf(fout, L"%s", L"<div class = 'InfoGroup'>Sở thích</div>");
-	fwprintf(fout, L"%s", L"<div>");
-	fwprintf(fout, L"%s", L"<ul class='TextInList'>");
-
-	//Sở thích
-	for (int i = 0; i < sv.SoSoThich; i++)
+	if (option.NgaySinh == true)
 	{
-		fwprintf(fout, L"%s %s %s", L"<li>", sv.SoThich[i], L"</li>");
+		fwprintf(fout, L"%s %s %s", L"<li>Ngày sinh :", sv.NgaySinh, L"</li>");
 	}
 
-	//fwprintf(fout, L"%s", L"<li>Ẩm thực : bún riêu, bún thịt nướng</li>");
+	if (option.Email == true)
+	{
+		fwprintf(fout, L"%s %s %s", L"<li>Email :", sv.Email, L"</li>"); // email???
+	}
+
 	fwprintf(fout, L"%s", L"</ul>");
 	fwprintf(fout, L"%s", L"</div>");
-	fwprintf(fout, L"%s", L"<div class = 'InfoGroup'>Mô tả</div>");
-	fwprintf(fout, L"%s", L"<div class = 'Description'>");
-	fwprintf(fout, L"%s", sv.MoTaBanThan);
-	fwprintf(fout, L"%s", L"</div>");
+
+	if (option.SoThich == true)
+	{
+		fwprintf(fout, L"%s", L"<div class = 'InfoGroup'>Sở thích</div>");
+		fwprintf(fout, L"%s", L"<div>");
+		fwprintf(fout, L"%s", L"<ul class='TextInList'>");
+
+		//Sở thích
+		for (int i = 1; i <= sv.SoSoThich; i++)
+		{
+			fwprintf(fout, L"%s %s %s", L"<li>", sv.SoThich[i], L"</li>");
+		}
+
+		//fwprintf(fout, L"%s", L"<li>Ẩm thực : bún riêu, bún thịt nướng</li>");
+		fwprintf(fout, L"%s", L"</ul>");
+		fwprintf(fout, L"%s", L"</div>");
+	}
+
+	if (option.MoTaBanThan == true)
+	{
+		fwprintf(fout, L"%s", L"<div class = 'InfoGroup'>Mô tả</div>");
+		fwprintf(fout, L"%s", L"<div class = 'Description'>");
+		fwprintf(fout, L"%s", sv.MoTaBanThan);
+		fwprintf(fout, L"%s", L"</div>");
+	}
+
+
 	fwprintf(fout, L"%s", L"</div>");
 	fwprintf(fout, L"%s", L"</div>");
 	fwprintf(fout, L"%s", L"</div>");
@@ -168,6 +185,56 @@ void WritingHTML(SinhVien sv) {
 	fclose(fout);
 }
 
+OptionProfile ResetOption()
+{
+	OptionProfile option;
+	option.Email = false;
+	option.MoTaBanThan = false;
+	option.NgaySinh = false;
+	option.SoThich = false;
+	return option;
+}
+
+OptionProfile Option()
+{
+	OptionProfile option;
+	option = ResetOption();
+	printf("---------------Option Profile --------------\n");
+	//char Answer;
+	printf("Ban muon hien thi muc nao tren trang web?\n");
+	printf("1: Ngay sinh \n");
+	printf("2: Email \n");
+	printf("3: Mo ta ban than \n");
+	printf("4: So thich \n");
+	printf("0: Tro lai \n");
+
+	int n;
+	do
+	{
+		printf("Chon: ");
+		scanf_s("%d", &n);
+		switch (n)
+		{
+		case 1:
+			option.NgaySinh = true;
+			break;
+		case 2:
+			option.Email = true;
+			break;
+		case 3:
+			option.MoTaBanThan = true;
+			break;
+		case 4:
+			option.SoThich = true;
+			break;
+		default:
+			break;
+		}
+	} while (n != 0);
+
+	return option;
+
+}
 
 int main()
 {
@@ -175,38 +242,81 @@ int main()
 	errno_t eIn;
 	SinhVien *ArrSV = NULL;
 	int SoSV;
-	//wchar_t *buf= NULL;
 
 	SoSV = CountSinhVien();
-	ArrSV=(SinhVien*)malloc(SoSV*sizeof(SinhVien));
+	ArrSV = (SinhVien*)malloc(SoSV * sizeof(SinhVien));
 
-	eIn = fopen_s(&fin, "infostu.csv", "r,ccs=UTF-8");
+	eIn = fopen_s(&fin, "database.csv", "r,ccs=UTF-8");
 	if (eIn != 0)
 	{
 		return 0;
 	}
 	int i = 0;
-	wchar_t *buf=(wchar_t*)malloc(1000*sizeof(wchar_t));
+	wchar_t *buf = (wchar_t*)malloc(1000 * sizeof(wchar_t));
 	while (fgetws(buf, 1000, fin) != NULL)
 	{
 		SinhVien sv;
 		sv = ReadingCSV(sv, buf);
 		ArrSV[i] = sv;
-		WritingHTML(ArrSV[i]);
+		//WritingHTML(ArrSV[i],option);
 		i++;
 		buf = (wchar_t*)malloc(1000 * sizeof(wchar_t));
 	}
-	/*
-	for (int j = 0; j < i; j++){
-		wprintf(L"%s", ArrSV[i].MSSV);
-	}
-		printf("Nhap stt: ");
-		int n;
-		do{
-			scanf_s("%d", &n);
-			WritingHTML(ArrSV[n]);
-		} while (n != -1);
-		*/
+
+	OptionProfile option;
+	do
+	{
+
+		int opt;
+		printf("-------------Sinh Vien-------------\n");
+		printf("Chon cac tuy chon sau:\n");
+		printf("1: Tuy chinh profile page \n");
+		printf("2: Tuy chon in profile page \n");
+		printf("0: Thoat \n");
+		printf("Chon: ");
+		scanf_s("%d", &opt);
+		if (opt == 0)
+			break;
+		switch (opt)
+		{
+		case 1:
+			option = Option();
+			break;
+		case 2:
+		{
+
+				  printf("----------Danh sach sinh vien------------ \n");
+				  for (int j = 0; j < SoSV; j++)
+				  {
+					  printf("%d ", j + 1);
+					  wprintf(L" %s\n", ArrSV[j].MSSV);
+				  }
+
+				  int n;
+
+				  do
+				  {
+					  printf("Nhap stt (nhap 0 de tro lai): ");
+					  scanf_s("%d", &n);
+					  if (n == 0)
+						  break;
+					  else
+					  {
+						  if (n <= SoSV && n > 0)
+							  WritingHTML(ArrSV[n - 1], option);
+						  else
+						  {
+							  printf("==> Khong ton tai, xin nhap lai \n");
+						  }
+					  }
+				  } while (true);
+				  break;
+		}
+		default:
+			break;
+		}
+	} while (true);
+
 	fclose(fin);
 	delete[] ArrSV;
 	delete[] buf;
