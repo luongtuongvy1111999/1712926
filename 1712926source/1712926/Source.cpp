@@ -55,17 +55,12 @@ SinhVien ReadingCSV(SinhVien sv, wchar_t buf[]) {
 	sv.SoThich = new wchar_t*[100];
 	Str = wcstok(NULL, L"\"");
 	Str = wcstok(NULL, L"\"");
-	//wchar_t *A = Str;
-	//sv.SoSoThich = CountSoThich(Str);
-	sv.SoThich = new wchar_t*[sv.SoSoThich];
-	//for (int i = 0; i < sv.SoSoThich; i++){
 	while (Str != NULL) {
 		sv.SoThich[sv.SoSoThich] = Str;
 		sv.SoSoThich++;
 		Str = wcstok(NULL, L"\"");
 		Str = wcstok(NULL, L"\"");
 	}
-	//}
 	return sv;
 }
 
@@ -73,13 +68,11 @@ void WritingHTML(SinhVien sv, OptionProfile option) {
 	setlocale(LC_ALL, "en_US.UTF-8");
 	FILE *fout;
 
-	//errno_t eOut;
 	wchar_t *str = new wchar_t[50];
 	wchar_t s[20] = L".\\Website\\";
 	wcscpy(str, s);
 	wcscat(str, sv.MSSV);
 	wcscat(str, L".html");
-	//eOut = fopen_s(&fout, str, "w,ccs=UTF-8");
 	fout = _wfopen(str, L"w,ccs=UTF-8");
 
 
@@ -246,7 +239,6 @@ int main()
 	errno_t eIn;
 	SinhVien *ArrSV = NULL;
 	int SoSV;
-	//wchar_t *buf= NULL;
 
 	SoSV = CountSinhVien();
 	ArrSV = (SinhVien*)malloc(SoSV * sizeof(SinhVien));
