@@ -152,6 +152,7 @@ html, body
     font-size: 14pt;
     font-family: 'Times New Roman' , Times, serif;
     letter-spacing: 0.2em;
+    text-transform: uppercase;
 }
 .Personal_Phone
 {
